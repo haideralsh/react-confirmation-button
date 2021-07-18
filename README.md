@@ -21,7 +21,7 @@ adding them to your UI, consider other alternatives.
 2. If an action is rarely invoked, consider offering a confirmation dialog with
    a verb button that explains the magnitude of the action (example: "Delete 10
    Items"). You may additionally add a textbox to make the user to acknowledge
-   the affected entity of this action by typing the name of the entity to be deleted (examples: GitHub's delete repository UI and AWS S3 Bucket delete UI).
+   the affected entity of this action by typing the name of the entity to be deleted (examples: GitHub's delete repository UI and AWS S3 delete bucket UI).
 
 ### When to use Confirmation Buttons
 
