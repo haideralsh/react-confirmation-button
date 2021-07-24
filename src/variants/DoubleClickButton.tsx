@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
+import {
+  ConfirmedLabel,
+  IntitialButton,
+  IntitialButtonHovered,
+  ClickedButtonHoveredWithTooltip,
+  ClickedButtonWithTooltip,
+  Flex,
+} from './components'
 
 enum State {
   Initial,
@@ -9,86 +16,8 @@ enum State {
   Confirmed,
 }
 
-const Button = styled.button`
-  padding: 6px 32px;
-  border: none;
-  border-radius: 4px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  font-size: 13.3333px;
-`
-
-const IntitialButton = styled(Button)`
-  background-color: #cbd1d5;
-`
-
-const IntitialButtonHovered = styled(Button)`
-  background-color: #bbc2c7;
-`
-
-const ClickedButton = styled(Button)`
-  background-color: #f57778;
-`
-
-const ClickedButtonHovered = styled(Button)`
-  background-color: #dd6164;
-`
-
-const ConfirmedLabel = styled.span`
-  font-size: 13.3333px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-`
-
-const ConfirmationTooltip = styled.span`
-  position: relative;
-  background: #ffdd80;
-  border-radius: 3px;
-  padding: 0.3em 0.6em;
-  margin-top: 2px;
-  font-size: 12px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-
-  &:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border: 0.4em solid transparent;
-    border-bottom-color: #ffdd80;
-    border-top: 0;
-    margin-left: -0.4em;
-    margin-top: -0.4em;
-  }
-`
-
-const Flex = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-const ClickedButtonWithTooltip = (props: any) => {
-  return (
-    <Flex>
-      <ClickedButton {...props} />
-      <ConfirmationTooltip>Click again to confirm</ConfirmationTooltip>
-    </Flex>
-  )
-}
-
-const ClickedButtonHoveredWithTooltip = (props: any) => {
-  return (
-    <Flex>
-      <ClickedButtonHovered {...props} />
-      <ConfirmationTooltip>Click again to confirm</ConfirmationTooltip>
-    </Flex>
-  )
-}
-
-const map: Record<State, any> = {
+// @todo: find a better name
+const map: Record<State, { component: any; message: string }> = {
   [State.Initial]: {
     component: IntitialButton,
     message: 'Refund $42.00',
@@ -123,15 +52,16 @@ const DoubleClickButton = () => {
 
   useEffect(() => {
     switch (state) {
+      case State.Clicked:
+        timeout = setTimeout(() => {
+          setState(State.Initial)
+        }, 1500)
+        break
+
       case State.InitialHovered:
       case State.ClickedHovered:
         clearTimeout(timeout)
         break
-
-      case State.Clicked:
-        timeout = setTimeout(() => {
-          setState(State.Initial)
-        }, 2000 * 60)
     }
 
     return () => {
@@ -184,14 +114,12 @@ const DoubleClickButton = () => {
     children: message,
   }
 
-  console.log(state)
-
   return (
-    <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+    <Flex justifyContent="flex-start">
       {React.createElement(map[state].component, {
         ...props,
       })}
-    </div>
+    </Flex>
   )
 }
 
