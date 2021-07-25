@@ -16,8 +16,7 @@ enum State {
   Confirmed,
 }
 
-// @todo: find a better name
-const map: Record<State, { component: any; message: string }> = {
+const stateContent: Record<State, { component: any; message: string }> = {
   [State.Initial]: {
     component: IntitialButton,
     message: 'Refund $42.00',
@@ -42,12 +41,12 @@ const map: Record<State, { component: any; message: string }> = {
 
 const DoubleClickButton = () => {
   const [state, setState] = useState(State.Initial)
-  const [message, setMessage] = useState(map[State.Initial].message)
+  const [message, setMessage] = useState(stateContent[State.Initial].message)
 
   let timeout: ReturnType<typeof setTimeout>
 
   useEffect(() => {
-    setMessage(map[state].message)
+    setMessage(stateContent[state].message)
   }, [state])
 
   useEffect(() => {
@@ -116,7 +115,7 @@ const DoubleClickButton = () => {
 
   return (
     <Flex justifyContent="flex-start">
-      {React.createElement(map[state].component, {
+      {React.createElement(stateContent[state].component, {
         ...props,
       })}
     </Flex>
