@@ -32,7 +32,7 @@ export const ConfirmedLabel = styled.span`
     Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 `
 
-export const ConfirmationTooltip = styled.span`
+export const Tooltip = styled.span`
   position: relative;
   background: #ffdd80;
   border-radius: 3px;
@@ -65,11 +65,13 @@ export const Flex = styled.div<any>`
   justify-content: ${p => p.justifyContent};
 `
 
+const ConfirmationTooltip = () => <Tooltip>Click again to confirm</Tooltip>
+
 export const ClickedButtonWithTooltip = (props: any) => {
   return (
     <Flex direction="column" alignItems="center">
       <ClickedButton {...props} />
-      <ConfirmationTooltip>Click again to confirm</ConfirmationTooltip>
+      <ConfirmationTooltip />
     </Flex>
   )
 }
@@ -78,7 +80,7 @@ export const ClickedButtonHoveredWithTooltip = (props: any) => {
   return (
     <Flex direction="column" alignItems="center">
       <ClickedButtonHovered {...props} />
-      <ConfirmationTooltip>Click again to confirm</ConfirmationTooltip>
+      <ConfirmationTooltip />
     </Flex>
   )
 }
