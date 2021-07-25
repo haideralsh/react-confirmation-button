@@ -39,6 +39,8 @@ const stateContent: Record<State, { component: any; message: string }> = {
   },
 }
 
+const delay = 1500
+
 const DoubleClickButton = () => {
   const [state, setState] = useState(State.Initial)
   const [message, setMessage] = useState(stateContent[State.Initial].message)
@@ -54,7 +56,7 @@ const DoubleClickButton = () => {
       case State.Clicked:
         timeout = setTimeout(() => {
           setState(State.Initial)
-        }, 1500)
+        }, delay)
         break
 
       case State.InitialHovered:
