@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react'
 import {
   ConfirmedLabel,
   IntitialButton,
-  IntitialButtonHovered,
-  ClickedButtonHoveredWithTooltip,
   ClickedButtonWithTooltip,
   Flex,
 } from './components'
@@ -16,26 +14,26 @@ enum State {
   Confirmed,
 }
 
-const stateContent: Record<State, { component: any; message: string }> = {
+const stateContent: Record<State, { component: any; props: any }> = {
   [State.Initial]: {
     component: IntitialButton,
-    message: 'Refund $42.00',
+    props: { children: 'Refund $42.00' },
   },
   [State.InitialHovered]: {
-    component: IntitialButtonHovered,
-    message: 'Refund $42.00',
+    component: IntitialButton,
+    props: { children: 'Refund $42.00', hovered: true },
   },
   [State.Clicked]: {
     component: ClickedButtonWithTooltip,
-    message: 'Refund $42.00',
+    props: { children: 'Refund $42.00' },
   },
   [State.ClickedHovered]: {
-    component: ClickedButtonHoveredWithTooltip,
-    message: 'Refund $42.00',
+    component: ClickedButtonWithTooltip,
+    props: { children: 'Refund $42.00', hovered: true },
   },
   [State.Confirmed]: {
     component: ConfirmedLabel,
-    message: 'Successfully Refunded $42.00',
+    props: { children: 'Successfully Refunded $42.00' },
   },
 }
 
@@ -43,13 +41,8 @@ const delay = 1500
 
 const DoubleClickButton = () => {
   const [state, setState] = useState(State.Initial)
-  const [message, setMessage] = useState(stateContent[State.Initial].message)
 
   let timeout: ReturnType<typeof setTimeout>
-
-  useEffect(() => {
-    setMessage(stateContent[state].message)
-  }, [state])
 
   useEffect(() => {
     switch (state) {
@@ -109,10 +102,10 @@ const DoubleClickButton = () => {
   }
 
   const props = {
+    ...stateContent[state].props,
     onClick: handleClick,
     onMouseEnter: handleMouseEnter,
     onMouseLeave: handleMouseLeave,
-    children: message,
   }
 
   return (

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
 const Button = styled.button`
@@ -11,19 +11,11 @@ const Button = styled.button`
 `
 
 export const IntitialButton = styled(Button)`
-  background-color: #cbd1d5;
-`
-
-export const IntitialButtonHovered = styled(Button)`
-  background-color: #bbc2c7;
+  background-color: ${p => (p.hovered ? '#bbc2c7' : '#cbd1d5')};
 `
 
 export const ClickedButton = styled(Button)`
-  background-color: #f57778;
-`
-
-export const ClickedButtonHovered = styled(Button)`
-  background-color: #dd6164;
+  background-color: ${p => (p.hovered ? '#dd6164' : '#f57778')};
 `
 
 export const ConfirmedLabel = styled.span`
@@ -68,19 +60,23 @@ export const Flex = styled.div<any>`
 const ConfirmationTooltip = () => <Tooltip>Click again to confirm</Tooltip>
 
 export const ClickedButtonWithTooltip = (props: any) => {
+  const [showTooltip, setShowTooltip] = useState(false)
+  let timeout: ReturnType<typeof setTimeout>
+
+  useEffect(() => {
+    timeout = setTimeout(() => {
+      setShowTooltip(true)
+    }, 250)
+
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [])
+
   return (
     <Flex direction="column" alignItems="center">
       <ClickedButton {...props} />
-      <ConfirmationTooltip />
-    </Flex>
-  )
-}
-
-export const ClickedButtonHoveredWithTooltip = (props: any) => {
-  return (
-    <Flex direction="column" alignItems="center">
-      <ClickedButtonHovered {...props} />
-      <ConfirmationTooltip />
+      {showTooltip && <ConfirmationTooltip />}
     </Flex>
   )
 }
