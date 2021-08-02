@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
-const Button = styled.button`
+const Button = styled.button<any>`
   padding: 6px 32px;
   border: none;
   border-radius: 4px;
