@@ -1,37 +1,66 @@
 import { createMachine } from 'xstate'
 
-const doubleClickMachine = createMachine({
-  id: 'doubleClick',
-  initial: 'initial',
+interface Context {
+  component?: any
+  props?: {
+    children?: string
+    hovered?: boolean
+  }
+}
+
+type EventType<S> = { type: S }
+
+type Event =
+  | EventType<'HOVER'>
+  | EventType<'LEAVE'>
+  | EventType<'CLICK'>
+  | EventType<'RESET'> // Something feels wrong about this uninvocable event
+
+type StateContext<S, T = {}> = { value: S; context: Context & T }
+
+type State =
+  | StateContext<'idle', { props: { hovered: false } }>
+  | StateContext<'hovered', { props: { hovered: true } }>
+  | StateContext<'clicked', { props: { hovered: false } }>
+  | StateContext<'clickedAndHovered', { props: { hovered: true } }>
+  | StateContext<'confirmed'>
+
+export default createMachine<Context, Event, State>({
+  id: 'Double Click Confirmation Button',
+  initial: 'idle',
+  context: {
+    component: undefined,
+    props: {
+      children: '',
+      hovered: undefined,
+    },
+  },
   states: {
-    initial: {
+    idle: {
       on: {
-        HOVER: 'initialHovered',
+        HOVER: 'hovered',
       },
     },
-    initialHovered: {
+    hovered: {
       on: {
-        CLICK: 'clickedHovered',
-        LEAVE: 'initial',
+        CLICK: 'clickedAndHovered',
+        LEAVE: 'idle',
       },
     },
     clicked: {
       on: {
-        HOVER: 'clickedHovered',
+        HOVER: 'clickedAndHovered',
+        RESET: 'idle',
       },
     },
-    clickedHovered: {
+    clickedAndHovered: {
       on: {
         CLICK: 'confirmed',
         LEAVE: 'clicked',
       },
     },
     confirmed: {
-      on: {
-        // Nothing to see here
-      },
+      // Nothing to do
     },
   },
 })
-
-export default doubleClickMachine
