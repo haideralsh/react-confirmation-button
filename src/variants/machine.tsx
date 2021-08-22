@@ -8,24 +8,18 @@ interface Context {
   }
 }
 
-type EventType<S> = { type: S }
-
-type Event =
-  | EventType<'HOVER'>
-  | EventType<'LEAVE'>
-  | EventType<'CLICK'>
-  | EventType<'RESET'> // Something feels wrong about this uninvocable event
-
-type StateContext<S, T = {}> = { value: S; context: Context & T }
+type Event = { type: 'HOVER' } | { type: 'LEAVE' } | { type: 'CLICK' }
 
 type State =
-  | StateContext<'idle', { props: { hovered: false } }>
-  | StateContext<'hovered', { props: { hovered: true } }>
-  | StateContext<'clicked', { props: { hovered: false } }>
-  | StateContext<'clickedAndHovered', { props: { hovered: true } }>
-  | StateContext<'confirmed'>
+  | 'idle'
+  | 'hovered'
+  | 'clicked'
+  | 'clickedWithTooltip'
+  | 'clickedAndHovered'
+  | 'clickedAndHoveredWithTooltip'
+  | 'confirmed'
 
-export default createMachine<Context, Event, State>({
+export default createMachine({
   id: 'Double Click Confirmation Button',
   initial: 'idle',
   context: {
@@ -49,14 +43,30 @@ export default createMachine<Context, Event, State>({
     },
     clicked: {
       on: {
-        HOVER: 'clickedAndHovered',
-        RESET: 'idle',
+        HOVER: { target: 'clickedAndHovered' },
       },
     },
     clickedAndHovered: {
+      after: {
+        250: { target: 'clickedAndHoveredWithTooltip' },
+      },
       on: {
         CLICK: 'confirmed',
         LEAVE: 'clicked',
+      },
+    },
+    clickedWithTooltip: {
+      after: {
+        1500: { target: 'idle' },
+      },
+      on: {
+        HOVER: { target: 'clickedAndHoveredWithTooltip' },
+      },
+    },
+    clickedAndHoveredWithTooltip: {
+      on: {
+        CLICK: 'confirmed',
+        LEAVE: 'clickedWithTooltip',
       },
     },
     confirmed: {
@@ -64,3 +74,7 @@ export default createMachine<Context, Event, State>({
     },
   },
 })
+
+// @todo: take a look at this: https://xstate.js.org/docs/guides/interpretation.html#interpreter
+// and this: https://xstate.js.org/docs/guides/delays.html#delay-expressions
+// for handling timeouts
