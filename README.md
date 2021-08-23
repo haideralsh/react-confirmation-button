@@ -2,6 +2,8 @@
 
 > An exploration in desktop UI buttons for irreversible actions
 
+![Demo](demo.gif)
+
 ### What & Why?
 
 Confirmation Buttons are used for actions that are either irreversible (example:
