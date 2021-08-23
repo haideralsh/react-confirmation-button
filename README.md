@@ -3,7 +3,7 @@
 > An exploration in desktop UI buttons for irreversible actions
 
 <img src="./demo.gif" alt="Demo for the double click confirmation button"
-width="200" />
+width="280" />
 
 ### What & Why?
 
