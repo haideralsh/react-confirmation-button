@@ -1,108 +1,56 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
+import { useMachine } from '@xstate/react'
+import doubleClickMachine, { State } from './machine'
 import {
   ConfirmedLabel,
   IntitialButton,
   ClickedButtonWithTooltip,
   Flex,
+  ClickedButton,
 } from './components'
 
-enum State {
-  Initial,
-  InitialHovered,
-  Clicked,
-  ClickedHovered,
-  Confirmed,
-}
-
-const stateContent: Record<State, { component: any; props: any }> = {
-  [State.Initial]: {
+const stateContent: Record<State['value'], { component: any; props: any }> = {
+  idle: {
     component: IntitialButton,
     props: { children: 'Refund $42.00' },
   },
-  [State.InitialHovered]: {
+  hovered: {
     component: IntitialButton,
     props: { children: 'Refund $42.00', hovered: true },
   },
-  [State.Clicked]: {
+  clicked: {
+    component: ClickedButton,
+    props: { children: 'Refund $42.00', hovered: true },
+  },
+  clickedWithTooltip: {
     component: ClickedButtonWithTooltip,
     props: { children: 'Refund $42.00' },
   },
-  [State.ClickedHovered]: {
+  clickedAndHovered: {
+    component: ClickedButton,
+    props: { children: 'Refund $42.00', hovered: true },
+  },
+  clickedAndHoveredWithTooltip: {
     component: ClickedButtonWithTooltip,
     props: { children: 'Refund $42.00', hovered: true },
   },
-  [State.Confirmed]: {
+  confirmed: {
     component: ConfirmedLabel,
     props: { children: 'Successfully Refunded $42.00' },
   },
 }
 
-const delay = 1500
-
 const DoubleClickButton = () => {
-  const [state, setState] = useState(State.Initial)
+  const [state, send] = useMachine(doubleClickMachine)
 
-  let timeout: ReturnType<typeof setTimeout>
+  const handleClick = () => send('CLICK')
 
-  useEffect(() => {
-    switch (state) {
-      case State.Clicked:
-        timeout = setTimeout(() => {
-          setState(State.Initial)
-        }, delay)
-        break
+  const handleMouseEnter = () => send('HOVER')
 
-      case State.InitialHovered:
-      case State.ClickedHovered:
-        clearTimeout(timeout)
-        break
-    }
-
-    return () => {
-      clearTimeout(timeout)
-    }
-  }, [state])
-
-  const handleClick = () => {
-    switch (state) {
-      case State.Initial:
-      case State.InitialHovered:
-        setState(State.ClickedHovered)
-        break
-
-      case State.Clicked:
-      case State.ClickedHovered:
-        setState(State.Confirmed)
-        break
-    }
-  }
-
-  const handleMouseEnter = () => {
-    switch (state) {
-      case State.Initial:
-        setState(State.InitialHovered)
-        break
-
-      case State.Clicked:
-        setState(State.ClickedHovered)
-        break
-    }
-  }
-
-  const handleMouseLeave = () => {
-    switch (state) {
-      case State.InitialHovered:
-        setState(State.Initial)
-        break
-
-      case State.ClickedHovered:
-        setState(State.Clicked)
-        break
-    }
-  }
+  const handleMouseLeave = () => send('LEAVE')
 
   const props = {
-    ...stateContent[state].props,
+    ...stateContent[state.value as keyof typeof stateContent].props,
     onClick: handleClick,
     onMouseEnter: handleMouseEnter,
     onMouseLeave: handleMouseLeave,
@@ -110,9 +58,12 @@ const DoubleClickButton = () => {
 
   return (
     <Flex justifyContent="flex-start">
-      {React.createElement(stateContent[state].component, {
-        ...props,
-      })}
+      {React.createElement(
+        stateContent[state.value as keyof typeof stateContent].component,
+        {
+          ...props,
+        },
+      )}
     </Flex>
   )
 }
