@@ -1,5 +1,9 @@
 import { createMachine } from 'xstate'
 
+// Helper Types
+type StateContext<T> = { value: T; context: Context }
+type EventType<T> = { type: T }
+
 interface Context {
   component?: any
   props?: {
@@ -8,20 +12,22 @@ interface Context {
   }
 }
 
-type Event = { type: 'HOVER' } | { type: 'LEAVE' } | { type: 'CLICK' }
+export type State =
+  | StateContext<'idle'>
+  | StateContext<'hovered'>
+  | StateContext<'clicked'>
+  | StateContext<'clickedWithTooltip'>
+  | StateContext<'clickedAndHovered'>
+  | StateContext<'clickedAndHoveredWithTooltip'>
+  | StateContext<'confirmed'>
 
-type State =
-  | 'idle'
-  | 'hovered'
-  | 'clicked'
-  | 'clickedWithTooltip'
-  | 'clickedAndHovered'
-  | 'clickedAndHoveredWithTooltip'
-  | 'confirmed'
+type Event = EventType<'HOVER'> | EventType<'LEAVE'> | EventType<'CLICK'>
 
-export default createMachine({
-  id: 'Double Click Confirmation Button',
+export default createMachine<Context, Event, State>({
+  id: 'double-click-confirmation-button',
   initial: 'idle',
+
+  // Context is unused for now
   context: {
     component: undefined,
     props: {
@@ -29,10 +35,13 @@ export default createMachine({
       hovered: undefined,
     },
   },
+
   states: {
     idle: {
       on: {
-        HOVER: 'hovered',
+        HOVER: {
+          target: 'hovered',
+        },
       },
     },
     hovered: {
@@ -42,6 +51,9 @@ export default createMachine({
       },
     },
     clicked: {
+      after: {
+        250: { target: 'clickedWithTooltip' },
+      },
       on: {
         HOVER: { target: 'clickedAndHovered' },
       },
@@ -74,7 +86,3 @@ export default createMachine({
     },
   },
 })
-
-// @todo: take a look at this: https://xstate.js.org/docs/guides/interpretation.html#interpreter
-// and this: https://xstate.js.org/docs/guides/delays.html#delay-expressions
-// for handling timeouts
