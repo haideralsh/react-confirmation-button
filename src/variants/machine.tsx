@@ -1,16 +1,17 @@
 import { createMachine } from 'xstate'
+import {
+  ClickedButton,
+  ClickedButtonWithTooltip,
+  ConfirmedLabel,
+  IntitialButton,
+} from './components'
 
 // Helper Types
 type StateContext<T> = { value: T; context: Context }
 type EventType<T> = { type: T }
 
-interface Context {
-  component?: any
-  props?: {
-    children?: string
-    hovered?: boolean
-  }
-}
+// Machine Types
+type Context = {}
 
 export type State =
   | StateContext<'idle'>
@@ -26,31 +27,31 @@ type Event = EventType<'HOVER'> | EventType<'LEAVE'> | EventType<'CLICK'>
 export default createMachine<Context, Event, State>({
   id: 'double-click-confirmation-button',
   initial: 'idle',
-
-  // Context is unused for now
-  context: {
-    component: undefined,
-    props: {
-      children: '',
-      hovered: undefined,
-    },
-  },
-
   states: {
     idle: {
       on: {
-        HOVER: {
-          target: 'hovered',
-        },
+        HOVER: 'hovered',
+      },
+      meta: {
+        component: IntitialButton,
+        props: { children: 'Refund $42.00' },
       },
     },
     hovered: {
+      meta: {
+        component: IntitialButton,
+        props: { children: 'Refund $42.00', hovered: true },
+      },
       on: {
         CLICK: 'clickedAndHovered',
         LEAVE: 'idle',
       },
     },
     clicked: {
+      meta: {
+        component: ClickedButton,
+        props: { children: 'Refund $42.00', hovered: true },
+      },
       after: {
         250: { target: 'clickedWithTooltip' },
       },
@@ -59,6 +60,10 @@ export default createMachine<Context, Event, State>({
       },
     },
     clickedAndHovered: {
+      meta: {
+        component: ClickedButton,
+        props: { children: 'Refund $42.00', hovered: true },
+      },
       after: {
         250: { target: 'clickedAndHoveredWithTooltip' },
       },
@@ -68,6 +73,10 @@ export default createMachine<Context, Event, State>({
       },
     },
     clickedWithTooltip: {
+      meta: {
+        component: ClickedButtonWithTooltip,
+        props: { children: 'Refund $42.00' },
+      },
       after: {
         1500: { target: 'idle' },
       },
@@ -76,13 +85,21 @@ export default createMachine<Context, Event, State>({
       },
     },
     clickedAndHoveredWithTooltip: {
+      meta: {
+        component: ClickedButtonWithTooltip,
+        props: { children: 'Refund $42.00', hovered: true },
+      },
       on: {
         CLICK: 'confirmed',
         LEAVE: 'clickedWithTooltip',
       },
     },
     confirmed: {
-      // Nothing to do
+      meta: {
+        component: ConfirmedLabel,
+        props: { children: 'Successfully Refunded $42.00' },
+      },
+      type: 'final',
     },
   },
 })
