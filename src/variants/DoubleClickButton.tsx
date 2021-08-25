@@ -1,44 +1,7 @@
 import React from 'react'
 import { useMachine } from '@xstate/react'
 import doubleClickMachine, { State } from './machine'
-import {
-  ConfirmedLabel,
-  IntitialButton,
-  ClickedButtonWithTooltip,
-  Flex,
-  ClickedButton,
-} from './components'
-
-const stateContent: Record<State['value'], { component: any; props: any }> = {
-  idle: {
-    component: IntitialButton,
-    props: { children: 'Refund $42.00' },
-  },
-  hovered: {
-    component: IntitialButton,
-    props: { children: 'Refund $42.00', hovered: true },
-  },
-  clicked: {
-    component: ClickedButton,
-    props: { children: 'Refund $42.00', hovered: true },
-  },
-  clickedWithTooltip: {
-    component: ClickedButtonWithTooltip,
-    props: { children: 'Refund $42.00' },
-  },
-  clickedAndHovered: {
-    component: ClickedButton,
-    props: { children: 'Refund $42.00', hovered: true },
-  },
-  clickedAndHoveredWithTooltip: {
-    component: ClickedButtonWithTooltip,
-    props: { children: 'Refund $42.00', hovered: true },
-  },
-  confirmed: {
-    component: ConfirmedLabel,
-    props: { children: 'Successfully Refunded $42.00' },
-  },
-}
+import { Flex } from './components'
 
 const DoubleClickButton = () => {
   const [state, send] = useMachine(doubleClickMachine)
@@ -50,7 +13,7 @@ const DoubleClickButton = () => {
   const handleMouseLeave = () => send('LEAVE')
 
   const props = {
-    ...stateContent[state.value as keyof typeof stateContent].props,
+    ...state.meta[`double-click-confirmation-button.${state.value}`].props,
     onClick: handleClick,
     onMouseEnter: handleMouseEnter,
     onMouseLeave: handleMouseLeave,
@@ -59,7 +22,9 @@ const DoubleClickButton = () => {
   return (
     <Flex justifyContent="flex-start">
       {React.createElement(
-        stateContent[state.value as keyof typeof stateContent].component,
+        // @todo: This is an *absolutely* filthy hack to get the meta associated
+        // to the state object
+        state.meta[`double-click-confirmation-button.${state.value}`].component,
         {
           ...props,
         },
