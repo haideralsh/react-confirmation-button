@@ -31,7 +31,7 @@ them to your UI, consider other alternatives:
 Reserve the use of Confirmation Buttons for use cases where:
 
 1. Performing an irreversible action is part of the regular flow
-2. Such action may need to be repeated many times in the same session
+2. Such action may need to be repeated many times in the same session, making the confirmation dialog alternative fatigue inducing.
 
 ### Technical Approach
 
