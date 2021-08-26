@@ -24,6 +24,9 @@ export type State =
 
 type Event = EventType<'HOVER'> | EventType<'LEAVE'> | EventType<'CLICK'>
 
+const TOOLTIP_DELAY = 250
+const RESET_DELAY = 1500
+
 export default createMachine<Context, Event, State>({
   id: 'double-click-confirmation-button',
   initial: 'idle',
@@ -53,7 +56,7 @@ export default createMachine<Context, Event, State>({
         props: { children: 'Refund $42.00', hovered: true },
       },
       after: {
-        250: { target: 'clickedWithTooltip' },
+        [TOOLTIP_DELAY]: { target: 'clickedWithTooltip' },
       },
       on: {
         HOVER: { target: 'clickedAndHovered' },
@@ -65,7 +68,7 @@ export default createMachine<Context, Event, State>({
         props: { children: 'Refund $42.00', hovered: true },
       },
       after: {
-        250: { target: 'clickedAndHoveredWithTooltip' },
+        [TOOLTIP_DELAY]: { target: 'clickedAndHoveredWithTooltip' },
       },
       on: {
         CLICK: 'confirmed',
@@ -78,7 +81,7 @@ export default createMachine<Context, Event, State>({
         props: { children: 'Refund $42.00' },
       },
       after: {
-        1500: { target: 'idle' },
+        [RESET_DELAY]: { target: 'idle' },
       },
       on: {
         HOVER: { target: 'clickedAndHoveredWithTooltip' },
