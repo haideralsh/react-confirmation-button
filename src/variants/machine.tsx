@@ -20,9 +20,6 @@ export type State =
 
 type Event = EventType<'HOVER'> | EventType<'LEAVE'> | EventType<'CLICK'>
 
-const TOOLTIP_DELAY = 250
-const RESET_DELAY = 1500
-
 export default createMachine<Context, Event, State>({
   id: 'double-click-confirmation-button',
   initial: 'idle',
