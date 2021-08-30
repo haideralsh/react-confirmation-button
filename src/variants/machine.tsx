@@ -1,10 +1,4 @@
 import { createMachine } from 'xstate'
-import {
-  ClickedButton,
-  ClickedButtonWithTooltip,
-  ConfirmedLabel,
-  IntitialButton,
-} from './components'
 
 // Helper Types
 type StateContext<T> = { value: T; context: Context }
@@ -35,40 +29,24 @@ export default createMachine<Context, Event, State>({
       on: {
         HOVER: 'hovered',
       },
-      meta: {
-        component: IntitialButton,
-        props: { children: 'Refund $42.00' },
-      },
     },
     hovered: {
-      meta: {
-        component: IntitialButton,
-        props: { children: 'Refund $42.00', hovered: true },
-      },
       on: {
         CLICK: 'clickedAndHovered',
         LEAVE: 'idle',
       },
     },
     clicked: {
-      meta: {
-        component: ClickedButton,
-        props: { children: 'Refund $42.00', hovered: true },
-      },
       after: {
-        [TOOLTIP_DELAY]: { target: 'clickedWithTooltip' },
+        RESET_DELAY: { target: 'clickedWithTooltip' },
       },
       on: {
         HOVER: { target: 'clickedAndHovered' },
       },
     },
     clickedAndHovered: {
-      meta: {
-        component: ClickedButton,
-        props: { children: 'Refund $42.00', hovered: true },
-      },
       after: {
-        [TOOLTIP_DELAY]: { target: 'clickedAndHoveredWithTooltip' },
+        TOOLTIP_DELAY: { target: 'clickedAndHoveredWithTooltip' },
       },
       on: {
         CLICK: 'confirmed',
@@ -76,32 +54,20 @@ export default createMachine<Context, Event, State>({
       },
     },
     clickedWithTooltip: {
-      meta: {
-        component: ClickedButtonWithTooltip,
-        props: { children: 'Refund $42.00' },
-      },
       after: {
-        [RESET_DELAY]: { target: 'idle' },
+        RESET_DELAY: { target: 'idle' },
       },
       on: {
         HOVER: { target: 'clickedAndHoveredWithTooltip' },
       },
     },
     clickedAndHoveredWithTooltip: {
-      meta: {
-        component: ClickedButtonWithTooltip,
-        props: { children: 'Refund $42.00', hovered: true },
-      },
       on: {
         CLICK: 'confirmed',
         LEAVE: 'clickedWithTooltip',
       },
     },
     confirmed: {
-      meta: {
-        component: ConfirmedLabel,
-        props: { children: 'Successfully Refunded $42.00' },
-      },
       type: 'final',
     },
   },
