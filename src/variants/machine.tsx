@@ -5,7 +5,9 @@ type StateContext<T> = { value: T; context: Context }
 type EventType<T> = { type: T }
 
 // Machine Types
-type Context = {}
+type Context = {
+  withTooltip: boolean
+}
 
 export type State =
   | StateContext<'idle'>
